@@ -7,10 +7,7 @@ use rand::{seq::SliceRandom, thread_rng};
 // ブロックの数
 const BLOCK_NUM: f32 = 11.;
 
-const BLOCK_SIZE: Vec2 = Vec2::new(
-    600. / (BLOCK_NUM as f32 + 2.),
-    600. / (BLOCK_NUM as f32 + 2.),
-);
+const BLOCK_SIZE: Vec2 = Vec2::new(600. / (BLOCK_NUM + 2.), 600. / (BLOCK_NUM + 2.));
 // プレイヤーの初期位置
 const PLAYER1_INITIAL_POSITION: Vec2 = Vec2::new(
     -BLOCK_SIZE.x * (BLOCK_NUM + 1.) / 2.,
@@ -514,10 +511,7 @@ fn labyrinth_setup(
 fn overlapping_remove(vec: &mut Vec<Vec2>, value: Vec2) {
     // 重複する要素があるインデックスを取得し、削除
     // ※ as_ivec2()メソッドを使用してf32をi32にしないと判定漏れが発生する
-    if let Some(index) = vec
-        .iter()
-        .position(|&item| item.as_ivec2() == value.as_ivec2())
-    {
+    if let Some(index) = vec.iter().position(|&i| i.as_ivec2() == value.as_ivec2()) {
         vec.remove(index);
     }
 }
@@ -581,10 +575,8 @@ fn move_player1(
     }
 
     // 座標を更新
-    transform.translation.x =
-        transform.translation.x + direction_x * game.player_speed * time.delta_seconds();
-    transform.translation.y =
-        transform.translation.y + direction_y * game.player_speed * time.delta_seconds();
+    transform.translation.x += direction_x * game.player_speed * time.delta_seconds();
+    transform.translation.y += direction_y * game.player_speed * time.delta_seconds();
 }
 
 fn move_player2(
@@ -613,10 +605,8 @@ fn move_player2(
     }
 
     // 座標を更新
-    transform.translation.x =
-        transform.translation.x + direction_x * game.player_speed * time.delta_seconds();
-    transform.translation.y =
-        transform.translation.y + direction_y * game.player_speed * time.delta_seconds();
+    transform.translation.x += direction_x * game.player_speed * time.delta_seconds();
+    transform.translation.y += direction_y * game.player_speed * time.delta_seconds();
 }
 
 // TODO: 別の方法で実装したい
@@ -632,9 +622,9 @@ fn wall_collision(
         for transform in &block_query {
             let collision = collide(
                 transform.translation,
-                transform.scale.truncate(),
+                transform.scale.xy(),
                 player_transform.translation,
-                player_transform.scale.truncate(),
+                player_transform.scale.xy(),
             );
             // 衝突したなら
             if let Some(collision) = collision {
@@ -649,10 +639,10 @@ fn wall_collision(
                     _ => (),
                 }
 
-                player_transform.translation.x = player_transform.translation.x
-                    + direction_x * game.player_speed * time.delta_seconds();
-                player_transform.translation.y = player_transform.translation.y
-                    + direction_y * game.player_speed * time.delta_seconds();
+                player_transform.translation.x +=
+                    direction_x * game.player_speed * time.delta_seconds();
+                player_transform.translation.y +=
+                    direction_y * game.player_speed * time.delta_seconds();
             }
         }
     }
